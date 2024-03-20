@@ -5,7 +5,7 @@ info:
 paths:
   mempool/recent?limit=10:
     get:
-      summary: Get recent transactions in the Liquid mempool
+      summary: Get recent transactions in the Bitcoin mempool
       responses:
         '200':
           description: Successful response
