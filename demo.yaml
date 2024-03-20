@@ -3,9 +3,17 @@ info:
   title: Blockstream Bitcoin Mempool API
   version: 1.0.0
 paths:
-  mempool/recent?limit=10:
+  /mempool/recent:
     get:
       summary: Get recent transactions in the Bitcoin mempool
+      parameters:
+        - name: limit
+          in: query
+          description: Number of transactions to retrieve
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
           description: Successful response
@@ -14,10 +22,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/transactions'
+                  $ref: '#/components/schemas/Transaction'
 components:
   schemas:
-    transactions:
+    Transaction:
       type: object
       properties:
         txid:
@@ -31,5 +39,4 @@ components:
           description: Virtual size of the transaction
         value:
           type: integer
-          description: value
-
+          description: Transaction value
