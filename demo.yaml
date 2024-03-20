@@ -1,34 +1,75 @@
-openapi: 3.0.0
-info:
-  title: Blockstream Bitcoin Mempool API
-  version: 1.0.0
-paths:
-  mempool/recent?limit=10:
-    get:
-      summary: Get recent transactions in the Bitcoin mempool
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/transactions'
-components:
-  schemas:
-    transactions:
-      type: object
-      properties:
-        txid:
-          type: string
-          description: Transaction ID
-        fee:
-          type: number
-          description: Transaction fee
-        vsize:
-          type: integer
-          description: Virtual size of the transaction
-        value:
-          type: integer
-          description: value
+import { graph, connector, config } from '@grafbase/sdk';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const g = graph.Standalone();
+
+const mempool = connector.OpenAPI('mempool', {
+  schema: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Blockstream Bitcoin Mempool API',
+      version: '1.0.0',
+    },
+    paths: {
+      'mempool/recent?limit=10': {
+        get: {
+          summary: 'Get recent transactions in the Bitcoin mempool',
+          responses: {
+            '200': {
+              description: 'Successful response',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/transactions',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        transactions: {
+          type: 'object',
+          properties: {
+            txid: {
+              type: 'string',
+              description: 'Transaction ID',
+            },
+            fee: {
+              type: 'number',
+              description: 'Transaction fee',
+            },
+            vsize: {
+              type: 'integer',
+              description: 'Virtual size of the transaction',
+            },
+            value: {
+              type: 'integer',
+              description: 'Value',
+            },
+          },
+        },
+      },
+    },
+  },
+  url: "https://mempool.space/api/",
+});
+
+g.datasource(mempool);
+
+export default config({
+  graph: g,
+  auth: {
+    rules: (rules) => {
+      rules.public();
+    },
+  },
+});
